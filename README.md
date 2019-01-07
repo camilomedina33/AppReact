@@ -1,1 +1,1 @@
-Proyecto unicamente en Reactjs
+Proyecto en Reactjs(redux)
