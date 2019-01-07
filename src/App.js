@@ -1,26 +1,69 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component, Fragment } from 'react';
+import './normalize.css';
+import './skeleton.css';
+
+import Formulario from './componentes/Formulario';
+import { calcularTotal } from './helpers';
+import Resultado from './componentes/Resultado';
+import Mensaje from './componentes/Mensaje';
+import Spinner from './componentes/Spinner';
 
 class App extends Component {
+
+  state = {
+    total:'',
+    valor:'',
+    plazo:'',
+    cargando: false
+  }
+
+  datosPrestamo = (valor, plazo) => {
+    const total = calcularTotal(valor, plazo);
+    //Colocar resultado en el State
+    this.setState({
+      cargando: true
+    }, () =>{
+      setTimeout(()=>{
+        this.setState({
+          total,
+          valor,
+          plazo,
+          cargando: false
+        })
+      }, 3000);  
+    })
+  }
+
+
   render() {
+    const {total, plazo, valor, cargando} = this.state;
+    //  Cargar un componente condicional
+    let componente;
+
+    if(total === '' && !cargando){
+      componente =<Mensaje/>
+    }else if(cargando) {
+      componente =<Spinner/>
+    }else{
+      componente =<Resultado
+      total={total}
+      plazo={plazo}
+      valor={valor}
+    />
+    }
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Fragment>
+        <h1>Cotizador de prestamos</h1>
+        <div className="container">
+        <Formulario
+        datosPrestamo={this.datosPrestamo}
+        />
+        <div className="mensajes">
+          {componente}
+        </div>
+        </div>
+      </Fragment>
     );
   }
 }
